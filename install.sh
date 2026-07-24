@@ -1,16 +1,16 @@
 #!/bin/bash
-sudo apt-get update
+apt-get update
 # apt-transport-https may be a dummy package; if so, you can skip that package
-sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+apt-get install -y apt-transport-https ca-certificates curl gpg
 # If the directory `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
-# sudo mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.36/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+# mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.36/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 # This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo apt-get update -y
-sudo apt-get install -y kubelet kubeadm kubectl
-sudo apt-mark hold kubelet kubeadm kubectl
-sudo systemctl enable --now kubelet
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
+apt-get update
+apt-get install -y kubelet kubeadm kubectl
+apt-mark hold kubelet kubeadm kubectl
+systemctl enable --now kubelet
 set -euo pipefail
 
 echo "=== Mise à jour du système ==="
@@ -89,13 +89,12 @@ sysctl --system
 echo "=== Désactivation du swap ==="
 swapoff -a
 sed -i '/ swap / s/^/#/' /etc/fstab
-systemctl status containerd
 ctr version
 VERSION="v1.36.0"
 wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz
-sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
+tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
 crictl info
 
 
 echo "=== Remove Machine-Id on template VM ==="
-sudo truncate -s 0 /etc/machine-id
+truncate -s 0 /etc/machine-id
